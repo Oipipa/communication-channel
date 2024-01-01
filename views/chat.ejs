@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Room</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const socket = io();
+
+            document.querySelector('form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                let message = document.querySelector('input[name="message"]').value;
+                socket.emit('chat message', { userId: "<%= userId %>", text: message });
+                document.querySelector('input[name="message"]').value = '';
+                return false;
+            });
+
+            socket.on('chat message', (msg) => {
+                let item = document.createElement('li');
+                item.textContent = `${msg.userId}: ${msg.text}`;
+                document.getElementById('messages').appendChild(item);
+                window.scrollTo(0, document.body.scrollHeight);
+            });
+        });
+    </script>
+</head>
+<body>
+<h1>Welcome to the Chat, <%= userId %></h1>
+<ul id="messages">
+    <% messages.forEach(function(message) { %>
+        <li><strong><%= message.userId %>:</strong> <%= message.text %></li>
+    <% }); %>
+</ul>
+<form action="">
+    <input type="text" name="message" autocomplete="off" placeholder="Type your message" required>
+    <button>Send</button>
+</form>
+<a href="/">Leave Chat</a>
+</body>
+</html>
